@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>রক্তসেতু (RaktaSetu) - Blood Donor Locator</title>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <i class="fas fa-heartbeat"></i>
+      <div>
+        <h1>রক্তসেতু (RaktaSetu)</h1>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="btn-request">
+        <i class="fas fa-hand-holding-medical"></i> রক্তের অনুরোধ (Request Blood)
+      </button>
+      <button class="btn btn-primary" id="btn-register">
+        <i class="fas fa-plus-circle"></i> রক্তদাতা হন (Become Donor)
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <div class="app-container">
+    
+    <!-- Sidebar / Drawer -->
+    <div class="sidebar">
+      <!-- Sidebar Tabs -->
+      <div class="sidebar-tabs">
+        <button class="tab-btn active" data-tab="donors">
+          <i class="fas fa-users"></i> রক্তদাতাগণ (Donors)
+        </button>
+        <button class="tab-btn" data-tab="requests">
+          <i class="fas fa-ambulance"></i> রক্তের অনুরোধ (Requests)
+        </button>
+        <button class="tab-btn" data-tab="compatibility">
+          <i class="fas fa-info-circle"></i> তথ্য (Information)
+        </button>
+      </div>
+
+      <!-- Sidebar Contents -->
+      <div class="sidebar-content">
+        
+        <!-- Tab 1: Donors List -->
+        <div class="tab-panel active" id="donors-panel">
+          <!-- Search box -->
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" id="search-input" placeholder="রক্তদাতা বা এলাকা খুঁজুন... (Search donor/location)">
+          </div>
+
+          <!-- Blood Group Filter -->
+          <div class="filter-section">
+            <span class="filter-title">গ্রুপ ফিল্টার (Blood Group Filter)</span>
+            <div class="blood-grid">
+              <div class="blood-chip" data-blood="A+">A+</div>
+              <div class="blood-chip" data-blood="A-">A-</div>
+              <div class="blood-chip" data-blood="B+">B+</div>
+              <div class="blood-chip" data-blood="B-">B-</div>
+              <div class="blood-chip" data-blood="AB+">AB+</div>
+              <div class="blood-chip" data-blood="AB-">AB-</div>
+              <div class="blood-chip" data-blood="O+">O+</div>
+              <div class="blood-chip" data-blood="O-">O-</div>
+            </div>
+          </div>
+
+          <!-- List of Donors -->
+          <div class="cards-list" id="donors-list">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Emergency Requests -->
+        <div class="tab-panel" id="requests-panel">
+          <div class="cards-list" id="requests-list">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- Tab 3: Blood Group Information -->
+        <div class="tab-panel" id="compatibility-panel">
+          <h3>রক্তের গ্রুপ ও সামঞ্জস্যতা (Compatibility Chart)</h3>
+          
+          <div class="compatibility-card">
+            <span class="compatibility-title"><i class="fas fa-tint"></i> গ্রুপ অনুযায়ী রক্ত গ্রহণ ও প্রদান</span>
+            <div class="compatibility-grid">
+              <div class="compatibility-row">
+                <strong>গ্রুপ (Group)</strong>
+                <strong>নিতে পারবে (Can Receive)</strong>
+                <strong>দিতে পারবে (Can Donate To)</strong>
+              </div>
+              <div class="compatibility-row">
+                <span><b>A+</b></span>
+                <span>A+, A-, O+, O-</span>
+                <span>A+, AB+</span>
+              </div>
+              <div class="compatibility-row">
+                <span><b>A-</b></span>
+                <span>A-, O-</span>
+                <span>A+, A-, AB+, AB-</span>
+              </div>
+              <div class="compatibility-row">
+                <span><b>B+</b></span>
+                <span>B+, B-, O+, O-</span>
+                <span>B+, AB+</span>
+              </div>
+              <div class="compatibility-row">
+                <span><b>B-</b></span>
+                <span>B-, O-</span>
+                <span>B+, B-, AB+, AB-</span>
+              </div>
+              <div class="compatibility-row">
+                <span><b>AB+</b></span>
+                <span>সকল গ্রুপ (Universal Recipient)</span>
+                <span>AB+ Only</span>
+              </div>
+              <div class="compatibility-row">
+                <span><b>AB-</b></span>
+                <span>AB-, A-, B-, O-</span>
+                <span>AB+, AB-</span>
+              </div>
+              <div class="compatibility-row">
+                <span><b>O+</b></span>
+                <span>O+, O-</span>
+                <span>O+, A+, B+, AB+</span>
+              </div>
+              <div class="compatibility-row">
+                <span><b>O-</b></span>
+                <span>O- Only (Universal Donor)</span>
+                <span>সকল গ্রুপ (Universal Donor)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <div class="map-wrapper">
+      <div id="map"></div>
+      
+      <!-- Central Pin Indicator for Location Picking -->
+      <div class="center-indicator" id="center-indicator">
+        <i class="fas fa-map-pin"></i>
+        <div class="center-indicator-label">স্থান চিহ্নিত করতে ম্যাপে ক্লিক করুন</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal 1: Register as Blood Donor -->
+  <div class="modal-overlay" id="register-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3><i class="fas fa-user-plus"></i> রক্তদাতা নিবন্ধন (Donor Registration)</h3>
+        <button class="modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="register-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="reg-name">পূর্ণ নাম (Full Name) *</label>
+            <input type="text" id="reg-name" class="form-control" required placeholder="উদা: রাকিব হাসান">
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="reg-blood">রক্তের গ্রুপ (Blood Group) *</label>
+              <select id="reg-blood" class="form-control" required>
+                <option value="" disabled selected>গ্রুপ নির্বাচন করুন</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="reg-phone">মোবাইল নম্বর (Phone Number) *</label>
+              <input type="tel" id="reg-phone" class="form-control" required placeholder="উদা: 017xxxxxxxx">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-address">এলাকার নাম / ঠিকানা (Area/Address) *</label>
+            <input type="text" id="reg-address" class="form-control" required placeholder="উদা: মিরপুর ১০, ঢাকা">
+          </div>
+
+          <div class="form-group" style="margin-top: 20px;">
+            <label>মানচিত্রে অবস্থান (Location on Map) *</label>
+            <button type="button" class="map-picker-btn" id="map-picker-btn">
+              <i class="fas fa-map-marked-alt"></i> ম্যাপে আপনার অবস্থান সিলেক্ট করুন (Pin Location)
+            </button>
+            <div class="selected-coordinates" id="selected-coordinates">
+              <!-- Dynamically shown when map is clicked -->
+            </div>
+          </div>
+          
+          <div class="form-group form-group-checkbox">
+            <input type="checkbox" id="reg-agree" required>
+            <label for="reg-agree" style="display: inline; margin-bottom: 0; font-size: 12px; font-weight: normal; color: var(--text-secondary);">
+              আমি স্বেচ্ছায় রক্তদানে ইচ্ছুক এবং আমার বিবরণ এখানে দেখানোর অনুমতি দিচ্ছি।
+            </label>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close">বাতিল (Cancel)</button>
+          <button type="submit" class="btn btn-primary">সাবমিট করুন (Submit)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Post Blood Request -->
+  <div class="modal-overlay" id="request-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3><i class="fas fa-hand-holding-medical"></i> রক্তের অনুরোধ করুন (Request Blood)</h3>
+        <button class="modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="request-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="req-name">রোগীর নাম (Patient Name) *</label>
+            <input type="text" id="req-name" class="form-control" required placeholder="উদা: মো: ইব্রাহিম">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="req-blood">রক্তের গ্রুপ (Blood Group Needed) *</label>
+              <select id="req-blood" class="form-control" required>
+                <option value="" disabled selected>গ্রুপ নির্বাচন করুন</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="req-quantity">রক্তের পরিমাণ (Quantity Required) *</label>
+              <input type="text" id="req-quantity" class="form-control" required placeholder="উদা: ২ ব্যাগ">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="req-phone">যোগাযোগের নম্বর (Contact Phone) *</label>
+              <input type="tel" id="req-phone" class="form-control" required placeholder="উদা: 018xxxxxxxx">
+            </div>
+            
+            <div class="form-group">
+              <label for="req-date">কবে প্রয়োজন? (Needed Date) *</label>
+              <input type="date" id="req-date" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="req-location">হাসপাতাল বা রক্তদানের স্থান (Hospital/Location) *</label>
+            <input type="text" id="req-location" class="form-control" required placeholder="উদা: বঙ্গবন্ধু শেখ মুজিব মেডিকেল বিশ্ববিদ্যালয় (BSMMU)">
+          </div>
+
+          <div class="form-group">
+            <label for="req-reason">শারীরিক সমস্যা / কারণ (Reason / Details)</label>
+            <textarea id="req-reason" class="form-control" rows="2" placeholder="উদা: ডায়ালাইসিস / ওপেন হার্ট সার্জারি"></textarea>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close">বাতিল (Cancel)</button>
+          <button type="submit" class="btn btn-primary">অনুরোধ পোস্ট করুন (Post Request)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Overlay -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Custom JS -->
+  <script src="app.js"></script>
+
+</body>
+</html>
