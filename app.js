@@ -334,7 +334,7 @@ function renderDonors() {
       </div>
       <div class="card-actions">
         <a href="tel:${donor.phone}" class="card-btn card-btn-call"><i class="fas fa-phone-alt"></i> কল (Call)</a>
-        <a href="sms:${donor.phone}?body=RaktaSetu: Hello, are you available to donate ${donor.bloodGroup} blood?" class="card-btn card-btn-chat"><i class="fas fa-sms"></i> এসএমএস (SMS)</a>
+        <a href="sms:${donor.phone}?body=Blood Finder: Hello, are you available to donate ${donor.bloodGroup} blood?" class="card-btn card-btn-chat"><i class="fas fa-sms"></i> এসএমএস (SMS)</a>
       </div>
     `;
 
@@ -389,7 +389,7 @@ function renderRequests() {
       </div>
       <div class="card-actions">
         <a href="tel:${req.phone}" class="card-btn card-btn-call"><i class="fas fa-phone-alt"></i> যোগাযোগ করুন (Call)</a>
-        <a href="https://wa.me/88${req.phone}?text=RaktaSetu: রক্তদানের ব্যাপারে যোগাযোগ করছি।" target="_blank" class="card-btn card-btn-chat"><i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপ (WhatsApp)</a>
+        <a href="https://wa.me/88${req.phone}?text=Blood Finder: রক্তদানের ব্যাপারে যোগাযোগ করছি।" target="_blank" class="card-btn card-btn-chat"><i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপ (WhatsApp)</a>
       </div>
     `;
     requestsListEl.appendChild(card);
