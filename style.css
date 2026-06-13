@@ -910,6 +910,39 @@ header {
   border-left-color: var(--accent-green);
 }
 
+/* Mobile view toggle button */
+.mobile-toggle-btn {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1500;
+  background: linear-gradient(135deg, var(--accent-red) 0%, #ff4d62 100%);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 14px 28px;
+  font-family: var(--font-main);
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(var(--accent-red-rgb), 0.4);
+  cursor: pointer;
+  align-items: center;
+  gap: 10px;
+  transition: var(--transition);
+  letter-spacing: 0.5px;
+}
+
+.mobile-toggle-btn:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 12px 30px rgba(var(--accent-red-rgb), 0.6);
+}
+
+.mobile-toggle-btn:active {
+  transform: translateX(-50%) translateY(0);
+}
+
 /* Responsive Styles */
 @media (max-width: 992px) {
   .sidebar {
@@ -919,31 +952,66 @@ header {
 
 @media (max-width: 768px) {
   body {
-    overflow: auto;
-    height: auto;
+    overflow: hidden;
+    height: 100vh;
   }
   
   header {
     padding: 0 16px;
+    height: 60px;
   }
   
   .logo h1 {
     font-size: 18px;
   }
   
+  .logo i {
+    font-size: 24px;
+  }
+
+  .header-actions .btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  
+  .header-actions .btn span {
+    display: none;
+  }
+  
   .app-container {
-    flex-direction: column-reverse;
-    height: calc(100vh - 70px);
+    flex-direction: column;
+    height: calc(100vh - 60px);
+    position: relative;
+  }
+  
+  .mobile-toggle-btn {
+    display: inline-flex;
   }
   
   .sidebar {
     width: 100%;
-    height: 60%;
+    height: 100%;
     border-right: none;
-    border-top: 1px solid var(--border-color);
+    display: flex;
+    transition: var(--transition);
   }
   
   .map-wrapper {
-    height: 40%;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    display: none;
+  }
+
+  .app-container.show-map .map-wrapper {
+    display: block;
+  }
+  
+  .app-container.show-map .sidebar {
+    display: none;
   }
 }

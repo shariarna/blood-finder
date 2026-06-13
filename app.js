@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupTabs();
   setupFilters();
   setupForms();
+  setupMobileToggle();
   renderDonors();
   renderRequests();
   tryGeolocation();
@@ -343,8 +344,23 @@ function renderDonors() {
       // Don't trigger map fly if clicking direct call/sms action buttons
       if (e.target.closest('.card-btn')) return;
       
-      map.flyTo([donor.lat, donor.lng], 14, { animate: true, duration: 1.5 });
-      marker.openPopup();
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        const appContainer = document.querySelector('.app-container');
+        const toggleBtn = document.getElementById('mobile-toggle-btn');
+        if (appContainer && toggleBtn) {
+          appContainer.classList.add('show-map');
+          toggleBtn.innerHTML = '<i class="fas fa-list"></i> <span>তালিকা দেখুন (View List)</span>';
+        }
+      }
+
+      setTimeout(() => {
+        if (map) {
+          map.invalidateSize();
+          map.flyTo([donor.lat, donor.lng], 14, { animate: true, duration: 1.5 });
+          marker.openPopup();
+        }
+      }, isMobile ? 150 : 0);
       
       // Briefly highlight card
       document.querySelectorAll('.donor-card').forEach(c => c.classList.remove('highlighted'));
@@ -552,4 +568,26 @@ function showToast(message, type = 'info') {
       toast.remove();
     }, 300);
   }, 4000);
+}
+
+// Mobile View Toggling Logic
+function setupMobileToggle() {
+  const toggleBtn = document.getElementById('mobile-toggle-btn');
+  const appContainer = document.querySelector('.app-container');
+
+  if (!toggleBtn || !appContainer) return;
+
+  toggleBtn.addEventListener('click', () => {
+    const isShowingMap = appContainer.classList.toggle('show-map');
+
+    if (isShowingMap) {
+      toggleBtn.innerHTML = '<i class="fas fa-list"></i> <span>তালিকা দেখুন (View List)</span>';
+      // Invalidate map size so Leaflet renders it fully when unhidden
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+      }, 100);
+    } else {
+      toggleBtn.innerHTML = '<i class="fas fa-map"></i> <span>ম্যাপ দেখুন (View Map)</span>';
+    }
+  });
 }
